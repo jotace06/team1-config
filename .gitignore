@@ -1,0 +1,35 @@
+# Kubernetes Secret 파일 — 가장 위험한 항목
+# Secret은 k8s Secret 오브젝트로 클러스터에만 존재해야 함
+*-secret.yaml
+*-secret.yml
+*.secret.yaml
+*.secret.yml
+secrets/
+secret/
+
+# Kustomize 빌드 결과물 (생성 파일, 소스가 아님)
+# kustomize build 로컬 테스트 시 생성될 수 있음
+rendered/
+output/
+
+# Helm values 중 민감값 포함 파일 (Helm 쓸 경우)
+*values-secret*
+*values.secret*
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 환경변수 파일
+.env
+.env.*
+
+# 임시 파일
+tmp/
+temp/
+*.tmp
