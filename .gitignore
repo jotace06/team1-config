@@ -33,3 +33,12 @@ output/
 tmp/
 temp/
 *.tmp
+
+# 실제 비밀값이 들어갈 secret 파일 — 절대 커밋 금지
+overlays/*/secret.yaml
+!overlays/*/secret.yaml.example
+
+# IDE/OS
+.DS_Store
+.idea/
+.vscode/

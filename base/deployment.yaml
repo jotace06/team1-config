@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-registration
+spec:
+  replicas: 1 # 처음엔 1개. HPA는 단계 E에서.
+
+  selector:
+    matchLabels:
+      app: course-registration # ★ 어떤 Pod를 관리할지
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0 # 업데이트 중 죽는 Pod 0개 (무중단)
+      maxSurge: 1 # 업데이트 중 추가로 띄울 Pod 1개
+
+  template: # ↓ Pod의 명세 (Pod 자체가 아니라 "Pod를 어떻게 만들지" 템플릿)
+    metadata:
+      labels:
+        app: course-registration # ★ selector와 정확히 일치해야 함
+    spec:
+      containers:
+        - name: app
+          image: 582797602058.dkr.ecr.ap-northeast-2.amazonaws.com/course-registration-dev:v0.0.2
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8080
+
+          envFrom: # ★ ConfigMap/Secret을 환경변수로 일괄 주입
+            - configMapRef:
+                name: course-registration-config
+            - secretRef:
+                name: course-registration-secret
+
+          env:
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+
+          resources: # ★ CPU/메모리 요청/제한
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+
+          startupProbe: # ★ "부팅 다 됐나?" 체크 (Spring Boot 부팅 느리니까)
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            failureThreshold: 30 # 30 × 10초 = 5분까지 부팅 대기
+            periodSeconds: 10
+
+          livenessProbe: # "지금 살아있나?" 죽었으면 컨테이너 재시작
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe: # "트래픽 받을 준비됐나?" 안 되면 Service에서 제외
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
