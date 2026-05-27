@@ -1,0 +1,15 @@
+apiVersion: gateway.k8s.aws/v1beta1
+kind: TargetGroupConfiguration
+metadata:
+  name: course-registration-tgc
+spec:
+  targetReference:
+    name: course-registration # Service 이름
+  defaultConfiguration:
+    targetType: ip
+    protocol: HTTP
+    healthCheckConfig:
+      healthCheckPath: /actuator/health
+      healthCheckProtocol: HTTP
+      matcher:
+        httpCode: "200"
