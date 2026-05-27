@@ -4,3 +4,5 @@ metadata:
   name: course-registration-config
 data:
   SPRING_PROFILES_ACTIVE: "dev"
+  JWT_COOKIE_SECURE: "false" # 현재 ALB는 HTTP only. HTTPS(ACM) 도입 시 제거하면 application.yml default(true) 상속.
+

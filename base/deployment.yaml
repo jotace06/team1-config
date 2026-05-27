@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: 582797602058.dkr.ecr.ap-northeast-2.amazonaws.com/course-registration-dev:v0.0.2
+          image: 582797602058.dkr.ecr.ap-northeast-2.amazonaws.com/course-registration-dev:v0.0.4
           imagePullPolicy: IfNotPresent
 
           ports:
