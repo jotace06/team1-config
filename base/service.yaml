@@ -3,13 +3,15 @@ kind: Service
 metadata:
   name: course-registration
 spec:
-  type: ClusterIP # 클러스터 내부만 노출 (외부는 Gateway/HTTPRoute)
-
+  type: ClusterIP
   selector:
-    app: course-registration # ★ Deployment의 template.labels와 매칭
-
+    app: course-registration
   ports:
     - name: http
-      port: 80 # Service가 받는 포트
-      targetPort: http # Pod의 containerPort 이름 (= 8080)
+      port: 80
+      targetPort: http # 8080 (ALB 트래픽)
+      protocol: TCP
+    - name: management # ★ 추가
+      port: 8081
+      targetPort: management # 8081 (ServiceMonitor 스크랩 + ALB health check 도달점)
       protocol: TCP

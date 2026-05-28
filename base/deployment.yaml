@@ -3,22 +3,19 @@ kind: Deployment
 metadata:
   name: course-registration
 spec:
-  replicas: 1 # 처음엔 1개. HPA는 단계 E에서.
-
+  replicas: 1
   selector:
     matchLabels:
-      app: course-registration # ★ 어떤 Pod를 관리할지
-
+      app: course-registration
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 0 # 업데이트 중 죽는 Pod 0개 (무중단)
-      maxSurge: 1 # 업데이트 중 추가로 띄울 Pod 1개
-
-  template: # ↓ Pod의 명세 (Pod 자체가 아니라 "Pod를 어떻게 만들지" 템플릿)
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
     metadata:
       labels:
-        app: course-registration # ★ selector와 정확히 일치해야 함
+        app: course-registration
     spec:
       containers:
         - name: app
@@ -28,8 +25,10 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+            - name: management
+              containerPort: 8081
 
-          envFrom: # ★ ConfigMap/Secret을 환경변수로 일괄 주입
+          envFrom:
             - configMapRef:
                 name: course-registration-config
             - secretRef:
@@ -39,7 +38,7 @@ spec:
             - name: JAVA_OPTS
               value: "-XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
 
-          resources: # ★ CPU/메모리 요청/제한
+          resources:
             requests:
               cpu: 200m
               memory: 512Mi
@@ -47,23 +46,23 @@ spec:
               cpu: 1000m
               memory: 1Gi
 
-          startupProbe: # ★ "부팅 다 됐나?" 체크 (Spring Boot 부팅 느리니까)
+          startupProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: http
-            failureThreshold: 30 # 30 × 10초 = 5분까지 부팅 대기
+              port: management # ★ http → management
+            failureThreshold: 30
             periodSeconds: 10
 
-          livenessProbe: # "지금 살아있나?" 죽었으면 컨테이너 재시작
+          livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: http
+              port: management # ★ http → management
             periodSeconds: 10
             failureThreshold: 3
 
-          readinessProbe: # "트래픽 받을 준비됐나?" 안 되면 Service에서 제외
+          readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: http
+              port: management # ★ http → management
             periodSeconds: 5
             failureThreshold: 3

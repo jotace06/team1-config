@@ -4,12 +4,13 @@ metadata:
   name: course-registration-tgc
 spec:
   targetReference:
-    name: course-registration # Service 이름
+    name: course-registration
   defaultConfiguration:
     targetType: ip
     protocol: HTTP
     healthCheckConfig:
       healthCheckPath: /actuator/health
       healthCheckProtocol: HTTP
+      healthCheckPort: "8081" # ★ 추가 (문자열! 따옴표 필수)
       matcher:
         httpCode: "200"
