@@ -15,4 +15,4 @@ labels:
 
 images:
   - name: 582797602058.dkr.ecr.ap-northeast-2.amazonaws.com/course-registration-dev
-    newTag: develop-208c59f
+    newTag: develop-bc2b4e1

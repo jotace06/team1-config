@@ -11,6 +11,7 @@ resources:
   - httproute.yaml
   - targetgroupconfig.yaml
   - loadbalancerconfig.yaml
+  - servicemonitor.yaml
 
 labels:
   - pairs:
